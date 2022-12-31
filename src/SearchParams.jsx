@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Pet } from "./Pet";
+import { useBreedList } from "./useBreedList";
 
 let count = 0;
 
@@ -19,7 +20,8 @@ export const SearchParams = () => {
   const [animal, setAnimal] = useState("");
   const [breed, setBreed] = useState("");
   const [pets, setPets] = useState([]);
-  const breeds = [];
+  const [breeds, status] = useBreedList(animal);
+
 
   count++;
 
