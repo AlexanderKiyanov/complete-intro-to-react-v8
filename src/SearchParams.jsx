@@ -5,8 +5,17 @@ let count = 0;
 
 const animals = ["bird", "cat", "reptile", "dog", "rabbit"];
 
+const fetchPets = async (options, setPets) => {
+  const res = await fetch(
+    `http://pets-v2.dev-apis.com/pets?animal=${options.animal}&location=${options.location}&breed=${options.breed}`
+  );
+  const json = await res.json();
+
+  setPets(json.pets);
+};
+
 export const SearchParams = () => {
-  const [location, setLocation] = useState("Seattle, WA");
+  const [location, setLocation] = useState("");
   const [animal, setAnimal] = useState("");
   const [breed, setBreed] = useState("");
   const [pets, setPets] = useState([]);
@@ -15,22 +24,32 @@ export const SearchParams = () => {
   count++;
 
   useEffect(() => {
-    const fetchPets = async () => {
-      const res = await fetch(
-        `http://pets-v2.dev-apis.com/pets?animal=${animal}&location=${location}&breed=${breed}`
-      );
-      const json = await res.json();
-
-      setPets(json.pets);
-    };
-
-    fetchPets();
-  }, [animal]);
+    fetchPets(
+      {
+        animal,
+        location,
+        breed,
+      },
+      setPets
+    );
+  }, []);
 
   return (
     <div className="search-params">
       <h1>{count}</h1>
-      <form>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchPets(
+            {
+              animal,
+              location,
+              breed,
+            },
+            setPets
+          );
+        }}
+      >
         <label htmlFor="location">
           Location
           <input
@@ -84,7 +103,6 @@ export const SearchParams = () => {
         <button>Submit</button>
       </form>
 
-
       {pets.map((pet) => (
         <Pet
           key={pet.id}
@@ -93,9 +111,6 @@ export const SearchParams = () => {
           breed={pet.breed}
         />
       ))}
-
-
-      
     </div>
   );
 };
